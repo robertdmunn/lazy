@@ -15,7 +15,7 @@
   - solazy.js
 */
 
-var solazy = (function() {
+var modlazy = (function() {
     'use strict';
     var cachedFiles = {};
 
