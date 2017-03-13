@@ -10,9 +10,12 @@
   https://github.com/robertdmunn/lazy
   - changed stageFileString() so it does not accept a comma-delimited list of files, since commas are valid characters in URls
 
+  2017-03-13
+  - renamed lazy to solazy
+  
 */
 
-var lazy = (function() {
+var solazy = (function() {
     'use strict';
     var cachedFiles = {};
 

@@ -1,5 +1,5 @@
 {
-    "name": "Lazy",
+    "name": "solazy",
     "version": "2.0.0",
 	"main": "dist/",
 	"ignore": ["bower.json",".gitignore","README.md"]
