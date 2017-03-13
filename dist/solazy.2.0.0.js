@@ -12,7 +12,7 @@
 
   2017-03-13
   - renamed lazy to solazy
-  
+  - solazy.js
 */
 
 var solazy = (function() {
