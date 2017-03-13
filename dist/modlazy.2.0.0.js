@@ -11,8 +11,10 @@
   - changed stageFileString() so it does not accept a comma-delimited list of files, since commas are valid characters in URls
 
   2017-03-13
-  - renamed lazy to solazy
-  - solazy.js
+  - renamed lazy to modlazy
+  - modlazy.js
+  - repo is now   https://github.com/robertdmunn/modlazy
+  - bower install modlazy
 */
 
 var modlazy = (function() {
