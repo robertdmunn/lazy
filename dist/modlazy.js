@@ -19,6 +19,9 @@
 2017-10-11
 	- fixed img.src set bug
 
+2018-02-01
+	- added support for failed URL loading & lists of URLS per asset for JS files
+
 */
 
 var modlazy = (function() {
@@ -88,7 +91,7 @@ var modlazy = (function() {
       };
 
       var dumpError = function(msg) {
-        console.log("~ Lazy Error: " + msg);
+        console.log("~ ModLazy Error: " + msg);
       };
 
       var getXmlHttp = function() {
@@ -103,18 +106,66 @@ var modlazy = (function() {
         return xmlhttp;
       };
 
-      var stageFileString = function(fileString, clbk) {
-        if (typeof cachedFiles[fileString] === "undefined") {
+      var timer = function(
+        times, // number of times to try
+        delay, // delay per try
+        delayMore, // extra delay per try (additional to delay)
+        test, // called each try, timer stops if this returns true
+        failure, // called on failure
+        result // used internally, shouldn't be passed
+      ) {
+        //var me = this;
+        if (times == -1 || times > 0) {
+          setTimeout(function() {
+            result = test() ? 1 : 0;
+            timer(
+              result ? 0 : times > 0 ? --times : times,
+              delay + (delayMore ? delayMore : 0),
+              delayMore,
+              test,
+              failure,
+              result
+            );
+          }, result || delay < 0 ? 0.1 : delay);
+        } else if (typeof failure == "function") {
+          setTimeout(failure, 1);
+        }
+      };
+
+      var addEvent = function(el, eventName, eventFunc) {
+        if (typeof el != "object") {
+          return false;
+        }
+
+        if (el.addEventListener) {
+          el.addEventListener(eventName, eventFunc, false);
+          return true;
+        }
+
+        if (el.attachEvent) {
+          el.attachEvent("on" + eventName, eventFunc);
+          return true;
+        }
+
+        return false;
+      };
+
+      var stageFileString = function(fileString, clbk, idx) {
+        idx = idx === undefined ? 0 : idx;
+        var fileArray = fileString.split("|");
+        var fileStr = fileArray[idx];
+
+        if (typeof cachedFiles[fileStr] === "undefined") {
           // If not cached, Loading the file
-          var fileObj = buildFileObject(fileString);
+          var fileObj = buildFileObject(fileStr);
           if (fileObj) {
             //valid file
-            loadFile(fileObj, clbk);
+            loadFile(fileObj, clbk, fileString, idx);
           }
         }
       };
 
-      var loadFile = function(fileObj, clbk) {
+      var loadFile = function(fileObj, clbk, fileString, idx) {
         cachedFiles[fileObj.path] = 1;
         if (fileObj.ext === "less") {
           loadLess(fileObj, clbk);
@@ -154,6 +205,37 @@ var modlazy = (function() {
                 }
               }
             };
+            addEvent(elm, "error", function() {
+              if (
+                fileString.split("|").length > 1 &&
+                idx < fileString.split("|").length - 1
+              ) {
+                stageFileString(fileString, clbk, idx + 1);
+              } else {
+                //fail
+              }
+            });
+            // when error is unsupported
+            timer(
+              15,
+              1000,
+              0,
+              function() {
+                return elm.id == "loaded";
+              },
+              function() {
+                if (elm.id != "loaded") {
+                  if (
+                    fileString.split("|").length > 1 &&
+                    idx < fileString.split("|").length - 1
+                  ) {
+                    stageFileString(fileString, clbk, idx + 1);
+                  } else {
+                    //fail
+                  }
+                }
+              }
+            );
           }
         }
       };
