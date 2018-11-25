@@ -5,10 +5,11 @@ Lightweight (3KB!) lazy loader for JS, CSS &amp; LESS assets.
 
 On demand assets loader built with ease, nested dependencies support and cache care.
 
-modlazy is a fork of Lazy Loader ( https://github.com/orenyakobi/lazy ) that fixes a bug in URL handling. 
+modlazy is a fork of Lazy Loader ( https://github.com/orenyakobi/lazy ) that fixes a bug in URL handling.
 
 Installation
 ----
+* Install with npm: `npm install modlazy`
 
 * Install with bower: `bower install modlazy`
 
